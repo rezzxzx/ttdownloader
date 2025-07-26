@@ -442,7 +442,7 @@
       if (!url) return alert("Please enter a valid TikTok URL");
       if (!url.includes("tiktok.com")) return alert("Please enter a valid TikTok URL");
 
-      const api = `https://xskycode-api.vercel.app/download/tiktok-v2?apikey=XSkycode&url=${encodeURIComponent(url)}`;
+      const api = `https://xskycode-api.vercel.app/download/tiktok?apikey=XSkycode&url=${encodeURIComponent(url)}`;
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = `
         <div class="loading">
