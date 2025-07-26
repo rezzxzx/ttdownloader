@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TikTok Downloader by Rezz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+    }
+    input {
+      background: #333;
+      color: #fff;
+    }
+    button {
+      background: #00c36e;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #00a65b;
+    }
+    video, img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+    .photo-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .photo-gallery img {
+      width: 100px;
+      border: 2px solid #444;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    a.download-link {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 15px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+    a.download-link:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="text-align:center;">🔥 TikTok Downloader</h1>
+    <input type="text" id="urlInput" placeholder="Paste link TikTok di sini..." />
+    <button onclick="download()">Download</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function download() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url) return alert("Masukin link dulu bro!");
+
+      const api = `https://xskycode-api.vercel.app/download/tiktok?apikey=XSkycode&url=${encodeURIComponent(url)}`;
+      const res = await fetch(api);
+      const data = await res.json();
+
+      console.log(data); // ← log biar kita bisa tahu struktur response-nya
+
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = "";
+
+      if (!data || !data.status || !data.result) {
+        resultDiv.innerHTML = "<p>⚠️ Gagal fetch data bro, coba link lain.</p>";
+        return;
+      }
+
+      const result = data.result;
+
+      // Tampilkan judul dan author
+      resultDiv.innerHTML += `
+        <h2>${result.title || "Tanpa Judul"}</h2>
+        <p>👤 ${result.author || "Unknown"}</p>
+      `;
+
+      // Video
+      if (result.type === "video") {
+        resultDiv.innerHTML += `
+          <video src="${result.nowatermark}" controls></video>
+          <a class="download-link" href="${result.nowatermark}" download>⬇️ Download Video (No Watermark)</a><br>
+          <a class="download-link" href="${result.audio}" download>🎧 Download MP3</a>
+        `;
+      }
+
+      // Slideshow / Foto
+      else if (result.type === "image") {
+        resultDiv.innerHTML += `<div class="photo-gallery">`;
+        result.images.forEach((img, i) => {
+          resultDiv.innerHTML += `
+            <a href="${img}" download="photo-${i+1}.jpg">
+              <img src="${img}" alt="photo-${i+1}" />
+            </a>
+          `;
+        });
+        resultDiv.innerHTML += `</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
